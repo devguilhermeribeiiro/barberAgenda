@@ -1,0 +1,16 @@
+{
+  "name": "guilherme/barber-agenda",
+  "description": "Api to schedule services on barber shop",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "BarberAgenda\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Guilherme Ribeiro"
+    }
+  ],
+  "require": {}
+}
