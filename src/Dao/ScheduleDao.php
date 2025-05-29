@@ -2,17 +2,14 @@
 
 namespace BarberAgenda\Dao;
 
+use BarberAgenda\Config\Database;
 use BarberAgenda\Dto\ScheduleResponseDto;
 use BarberAgenda\Entity\Schedule;
 use PDO;
 
 class ScheduleDao
 {
-    private PDO $conn;
-
-    public function __construct(PDO $conn) {
-        $this->conn = $conn;
-    }
+    private PDO $conn = Database::getConnection();
 
     public function findAll(): array
     {
