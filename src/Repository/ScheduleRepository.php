@@ -4,4 +4,4 @@ namespace BarberAgenda\Repository;
 
 use BarberAgenda\Dao\ScheduleDao;
 
-interface ScheduleRepository extends ScheduleDao {}
+class ScheduleRepository extends ScheduleDao {}
