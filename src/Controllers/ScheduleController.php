@@ -16,6 +16,7 @@ class ScheduleController {
         $data = $this->scheduleService->getAll();
         $response = json_encode($data);
 
+        http_response_code(200);
         return $response;
     }
 
@@ -46,6 +47,7 @@ class ScheduleController {
         $data = $this->scheduleService->getById($id);
         $response = json_encode($data);
 
+        http_response_code(200);
         return $response;
     }
 
@@ -70,5 +72,13 @@ class ScheduleController {
 
         http_response_code(200);
         return json_encode($response);
+    }
+
+    public function destroy($id): string {
+        $data = $this->scheduleService->destroy($id);
+        $response = json_encode([["message" => "Schedule destroyed"] => $data]);
+
+        http_response_code(200);
+        return $response;
     }
 }
