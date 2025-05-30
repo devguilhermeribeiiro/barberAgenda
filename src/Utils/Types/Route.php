@@ -1,5 +1,7 @@
 <?php
 
+namespace BarberAgenda\Utils\Types;
+
 class Route {
     private string $method;
     private string $path;
