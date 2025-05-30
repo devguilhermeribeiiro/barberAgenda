@@ -3,6 +3,7 @@
 namespace BarberAgenda\Dao;
 
 use BarberAgenda\Config\Database;
+use BarberAgenda\Dto\ScheduleRequestDto;
 use BarberAgenda\Dto\ScheduleResponseDto;
 use BarberAgenda\Entity\Schedule;
 use PDO;
@@ -21,9 +22,11 @@ class ScheduleDao
     public function findById(int $id): ScheduleResponseDto {
         $stmt = $this->conn->prepare("SELECT * FROM schedules WHERE id = ?");
         $stmt->bindParam(1, $id);
-        $rs = $stmt->execute();
+        $stmt->execute();
 
-        return new ScheduleResponseDto;
+        $rs = $stmt->fetchObject("ScheduleRespondeDto");
+
+        return $rs;
     }
 
     public function save(Schedule $schedule): ScheduleResponseDto {
@@ -42,7 +45,7 @@ class ScheduleDao
         return $rs;
     }
 
-    public function update(Schedule $schedule): ScheduleResponseDto {
+    public function update(Schedule $schedule, $id): ScheduleResponseDto {
         $stmt = $this->conn->prepare("UPDATE schedules SET service = ?, barber = ?, date = ?, hour = ? WHERE id = ? RETURNING *");
         
         $stmt->bindParam(
@@ -50,6 +53,7 @@ class ScheduleDao
             2, $schedule->getBarber(),
             3, $schedule->getDate(),
             4, $schedule->getHour(),
+            5, $id,
         );
 
         $stmt->execute();
