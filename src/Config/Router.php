@@ -1,35 +1,39 @@
 <?php
 
+namespace BarberAgenda\Config;
+
 use BarberAgenda\Utils\Types\Route;
-use BarberAgenda\Controllers;
 
 class Router {
-    private array $routes;
+    private static array $routes = [];
 
-    public function add(Route $route): void {
-        array_push($routes, $route);
+    public static function add(Route $route): void {
+        array_push(self::$routes, $route);
     }
 
-    public function handle(string $requestMethod, array $requestUri) {
-        foreach ($this->routes as $route) {
+    public static function handle(string $requestMethod, array $requestUri) {
+        foreach (self::$routes as $route) {
             if (!$requestMethod == strtoupper($route->method()) && $requestUri["path"] == $route->path()) {
                 http_response_code(404);
-                return json_encode(["error" => "route not found."]);
+                echo json_encode(["error" => "route not found."]);
             }
 
             if (!is_callable($route->callback())) {
                 if (!str_contains("@", $route->callback())) {
-                    http_response_code(400);
-                    return json_encode(["error" => "invalid callback"]);
+                    echo json_encode(["error" => "invalid callback"]);
                 }
                 
-                [$controller, $action] = explode("@", $route->callback());
+                [$controllerName, $action] = explode("@", $route->callback());
+
+                $controller = "\\BarberAgenda\\Controllers\\" . $controllerName;
 
                 if (!class_exists($controller) && method_exists($controller, $action)) {
                     http_response_code(400);
-                    return json_encode(["error" => "invalid callback"]);
+                    echo json_encode(["error" => "invalid callback"]);
                 }
                 
+                $controller = new $controller(DependencyContainer::inject());
+
                 call_user_func_array([$controller, $action], array_pop($requestUri["query"]));
             }
 
