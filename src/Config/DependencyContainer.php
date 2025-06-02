@@ -8,11 +8,10 @@ use BarberAgenda\Services\ScheduleService;
 
 class DependencyContainer
 {
-    public static function inject(): ScheduleController {
+    public static function inject(): ScheduleService {
         $repository = new ScheduleRepository;
         $service = new ScheduleService($repository);
-        $controller = new ScheduleController($service);
 
-        return $controller;
+        return $service;
     }
 }
