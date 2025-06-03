@@ -31,10 +31,10 @@ class Router {
                     http_response_code(400);
                     echo json_encode(["error" => "invalid callback"]);
                 }
-                
-                $controller = new $controller(DependencyContainer::inject());
+                $dependencies = new DependencyContainer();
+                $controller = new $controller($dependencies->inject());
 
-                call_user_func_array([$controller, $action], array_pop($requestUri["query"]));
+                call_user_func_array([$controller, $action], $requestUri["query"]);
             }
 
             call_user_func($route->callback(), array_pop($requestUri["query"]));
