@@ -12,19 +12,19 @@ class ScheduleController {
         $this->scheduleService = $scheduleServicsche;
     }
 
-    public function index(): string {
+    public function index(): void {
         $data = $this->scheduleService->getAll();
         $response = json_encode($data);
 
         http_response_code(200);
-        return $response;
+        echo $response;
     }
 
-    public function create(string $requestBody): string {
+    public function create(string $requestBody): void {
         if (!json_validate($requestBody)) {
             http_response_code(422);
 
-            return json_encode(["error" => "the request body must contains a valid JSON"]);
+            echo json_encode(["error" => "the request body must contains a valid JSON"]);
         }
 
         $data = json_decode($requestBody, true);
@@ -40,22 +40,22 @@ class ScheduleController {
         $response = $this->scheduleService->create($scheduleRequestDto);
 
         http_response_code(201);
-        return json_encode($response);
+        echo json_encode($response);
     }
 
-    public function show($id): string {
+    public function show($id): void {
         $data = $this->scheduleService->getById($id);
         $response = json_encode($data);
 
         http_response_code(200);
-        return $response;
+        echo $response;
     }
 
-    public function update(string $requestBody): string {
+    public function update(string $requestBody): void {
         if (!json_validate($requestBody)) {
             http_response_code(422);
 
-            return json_encode(["error" => "the request body must contains a valid JSON"]);
+            echo json_encode(["error" => "the request body must contains a valid JSON"]);
         }
 
         $data = json_decode($requestBody, true);
@@ -71,14 +71,14 @@ class ScheduleController {
         $response = $this->scheduleService->update($scheduleRequestDto);
 
         http_response_code(200);
-        return json_encode($response);
+        echo json_encode($response);
     }
 
-    public function destroy($id): string {
+    public function destroy($id): void {
         $data = $this->scheduleService->destroy($id);
         $response = json_encode([["message" => "Schedule destroyed"] => $data]);
 
         http_response_code(200);
-        return $response;
+        echo $response;
     }
 }
