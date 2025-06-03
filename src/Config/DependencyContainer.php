@@ -2,16 +2,23 @@
 
 namespace BarberAgenda\Config;
 
-use BarberAgenda\Controllers\ScheduleController;
+use BarberAgenda\Dao\ScheduleDao;
 use BarberAgenda\Repository\ScheduleRepository;
 use BarberAgenda\Services\ScheduleService;
 
 class DependencyContainer
 {
-    public static function inject(): ScheduleService {
-        $repository = new ScheduleRepository;
-        $service = new ScheduleService($repository);
+    private ScheduleRepository $scheduleRepository;
+    private ScheduleService $scheduleService;
 
-        return $service;
+    public function __construct()
+    {
+        $this->scheduleRepository = new ScheduleDao(Database::getConnection());
+        $this->scheduleService = new ScheduleService($this->scheduleRepository);
+    }
+
+    public function inject()
+    {
+        return $this->scheduleService;
     }
 }
