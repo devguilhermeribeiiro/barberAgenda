@@ -5,9 +5,9 @@ namespace BarberAgenda\Utils\Types;
 class Route {
     private string $method;
     private string $path;
-    private callable $callback;
+    private $callback;
 
-    public function __construct(string $method, string $path, callable $callback) {
+    public function __construct(string $method, string $path, $callback) {
         $this->method = $method;
         $this->path = $path;
         $this->callback = $callback;
