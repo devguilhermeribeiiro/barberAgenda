@@ -12,7 +12,6 @@ class Database {
     try {
       self::$conn = new PDO('pgsql:host=localhost;dbname=barberagenda', "barberagenda", "barberagenda");
       self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-      self::$conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
        throw new DatabaseConnectionError($e->getMessage());
     }
