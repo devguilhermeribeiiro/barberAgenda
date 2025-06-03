@@ -9,22 +9,26 @@ use PDO;
 
 class ScheduleDao implements ScheduleRepository
 {
-    private PDO $conn;
+    private $conn;
     
     public function __construct(PDO $conn) {
         $this->conn = $conn;
     }
 
-    public function findAll(): void
+    public function findAll(): array
     {
-        $rs = $this->conn->query("SELECT count(*) FROM schedules")->fetch();
+        $stmt = $this->conn->query("SELECT count(*) FROM schedules")->fetch();
 
-        if ($rs["count"] == 0) {
-            echo json_encode("No data found");
+        if ($stmt["count"] == 0) {
+            return ["Status" => "No data found"];
         }
 
-        $rs = $this->conn->query("SELECT * FROM schedules");
-        $schedules = $rs->fetch(PDO::FETCH_ASSOC);
+        $stmt = $this->conn->query("SELECT * FROM schedules");
+        $rs = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        [$this->conn, $stmt] = null;
+
+        return $rs;
     }
 
     public function findById(int $id): ScheduleResponseDto {
@@ -33,6 +37,8 @@ class ScheduleDao implements ScheduleRepository
         $stmt->execute();
 
         $rs = $stmt->fetchObject("ScheduleRespondeDto");
+
+        [$this->conn, $stmt] = null;
 
         return $rs;
     }
@@ -49,6 +55,8 @@ class ScheduleDao implements ScheduleRepository
 
         $stmt->execute();
         $rs = $stmt->fetchObject("ScheduleResponseDto");
+
+        [$this->conn, $stmt] = null;
 
         return $rs;
     }
@@ -67,6 +75,8 @@ class ScheduleDao implements ScheduleRepository
         $stmt->execute();
         $rs = $stmt->fetchObject("ScheduleResponseDto");
 
+        [$this->conn, $stmt] = null;
+
         return $rs;
     }
 
@@ -76,6 +86,8 @@ class ScheduleDao implements ScheduleRepository
         $stmt->bindParam(1, $id);
         $stmt->execute();
         $rs = $stmt->fetchObject("ScheduleResponseDto");
+
+        [$this->conn, $stmt] = null;
 
         return $rs;
     }
