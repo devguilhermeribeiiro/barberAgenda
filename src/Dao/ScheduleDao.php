@@ -2,21 +2,29 @@
 
 namespace BarberAgenda\Dao;
 
-use BarberAgenda\Config\Database;
-use BarberAgenda\Dto\ScheduleRequestDto;
 use BarberAgenda\Dto\ScheduleResponseDto;
 use BarberAgenda\Entity\Schedule;
+use BarberAgenda\Repository\ScheduleRepository;
 use PDO;
 
-class ScheduleDao
+class ScheduleDao implements ScheduleRepository
 {
-    private PDO $conn = Database::getConnection();
+    private PDO $conn;
+    
+    public function __construct(PDO $conn) {
+        $this->conn = $conn;
+    }
 
-    public function findAll(): array
+    public function findAll(): void
     {
+        $rs = $this->conn->query("SELECT count(*) FROM schedules")->fetch();
+
+        if ($rs["count"] == 0) {
+            echo json_encode("No data found");
+        }
+
         $rs = $this->conn->query("SELECT * FROM schedules");
         $schedules = $rs->fetch(PDO::FETCH_ASSOC);
-        return $schedules;   
     }
 
     public function findById(int $id): ScheduleResponseDto {
