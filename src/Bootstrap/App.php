@@ -2,7 +2,6 @@
 
 namespace BarberAgenda\Bootstrap;
 
-use BarberAgenda\Utils\Types\Route;
 use BarberAgenda\Config\Router;
 
 class App {
