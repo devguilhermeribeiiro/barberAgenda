@@ -23,25 +23,35 @@ class Router {
 
             if ($requestMethod === $route["method"] && preg_match($paramsPattern, $requestUri, $url_params)) {
                 array_shift($url_params);
+                print_r($url_params);
 
-            }
-
-            if (is_callable($route["callback"])) {
-                return call_user_func_array($route["callback"], $url_params);
-            } elseif (str_contains($route["callback"], "@")) {
-                [$controllerName, $action] = explode("@", $route["callback"]);
-
-                $controller = "\\BarberAgenda\\Controllers\\" . $controllerName;
-
-                if (!class_exists($controller)) {
+                if (is_string($route["callback"]) && str_contains($route["callback"], "@")) {
+    
+                    [$controllerName, $action] = explode("@", $route["callback"]);
+        
+                    $controller = "\\BarberAgenda\\Controllers\\" . $controllerName;
+        
+                    if (!class_exists($controller)) {
+                        echo json_encode(["error" => "invalid callback"]);
+                        return;
+                    }
+        
+                    $dependencies = new DependencyContainer();
+                    $controller = new $controller($dependencies->inject());
+        
+                    call_user_func_array([$controller, $action], $url_params);
+    
+                    return;
+                } 
+                elseif (is_callable($route["callback"])) {
+                    call_user_func_array($route["callback"], $url_params);
+                    
+                    return; 
+                }
+                else {
                     echo json_encode(["error" => "invalid callback"]);
                     return;
                 }
-
-                $dependencies = new DependencyContainer();
-                $controller = new $controller($dependencies->inject());
-
-                return call_user_func_array([$controller, $action], $url_params);
             }
         }
 
