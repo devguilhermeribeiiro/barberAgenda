@@ -6,6 +6,7 @@ use BarberAgenda\Dto\ScheduleRequestDto;
 use BarberAgenda\Dto\ScheduleResponseDto;
 use BarberAgenda\Entity\Schedule;
 use BarberAgenda\Repository\ScheduleRepository;
+use stdClass;
 
 class ScheduleService {
     private ScheduleRepository $scheduleRepository;
@@ -18,7 +19,7 @@ class ScheduleService {
         return $this->scheduleRepository->findAll();
     }
 
-    public function getById($id): ScheduleResponseDto {
+    public function getById($id): stdClass {
         return $this->scheduleRepository->findById($id);
     }
 
