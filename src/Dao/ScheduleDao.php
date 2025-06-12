@@ -5,7 +5,9 @@ namespace BarberAgenda\Dao;
 use BarberAgenda\Dto\ScheduleResponseDto;
 use BarberAgenda\Entity\Schedule;
 use BarberAgenda\Repository\ScheduleRepository;
+use DateTime;
 use PDO;
+use stdClass;
 
 class ScheduleDao implements ScheduleRepository
 {
@@ -24,68 +26,82 @@ class ScheduleDao implements ScheduleRepository
         }
 
         $stmt = $this->conn->query("SELECT * FROM schedules");
-        $rs = $stmt->fetch(PDO::FETCH_ASSOC);
+        $rs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         [$this->conn, $stmt] = null;
 
         return $rs;
     }
 
-    public function findById(int $id): ScheduleResponseDto {
+    public function findById(int $id): stdClass {
         $stmt = $this->conn->prepare("SELECT * FROM schedules WHERE id = ?");
-        $stmt->bindParam(1, $id);
+        $stmt->bindValue(1, $id);
         $stmt->execute();
 
-        $rs = $stmt->fetchObject("ScheduleRespondeDto");
+        $rs = $stmt->fetch(PDO::FETCH_OBJ);
 
         [$this->conn, $stmt] = null;
+
+        if (!$rs) {
+            echo json_encode(["error" => "schedule not found"]);
+            die();
+        }
 
         return $rs;
     }
 
     public function save(Schedule $schedule): ScheduleResponseDto {
-        $stmt = $this->conn->prepare("INSERT INTO schedules (service, barber, date, hour) VALUES (?, ?, ?) RETURNING *");
+        $stmt = $this->conn->prepare("INSERT INTO schedules (service, barber, date, hour) VALUES (?, ?, ?, ?) RETURNING *");
 
-        $stmt->bindParam(
-            1, $schedule->getService(),
-            2, $schedule->getBarber(),
-            3, $schedule->getDate(),
-            4, $schedule->getHour(),
-        );
+        $service = $schedule->getService();
+        $barber = $schedule->getBarber();
+        $date = DateTime::createFromFormat("d/m/Y", $schedule->getDate())->format("Y/m/d");
+        $hour = DateTime::createFromFormat("H:i", $schedule->getHour())->format("H:i");
+
+        $stmt->bindValue(1, $service);
+        $stmt->bindValue(2, $barber);
+        $stmt->bindValue(3, $date);
+        $stmt->bindValue(4, $hour);
 
         $stmt->execute();
-        $rs = $stmt->fetchObject("ScheduleResponseDto");
+        $stmt->setFetchMode(PDO::FETCH_CLASS, ScheduleResponseDto::class);
+        $rs = $stmt->fetch();
 
         [$this->conn, $stmt] = null;
 
         return $rs;
     }
 
-    public function update(Schedule $schedule, $id): ScheduleResponseDto {
+    public function update(Schedule $schedule, int $id): stdClass {
         $stmt = $this->conn->prepare("UPDATE schedules SET service = ?, barber = ?, date = ?, hour = ? WHERE id = ? RETURNING *");
         
-        $stmt->bindParam(
-            1, $schedule->getService(),
-            2, $schedule->getBarber(),
-            3, $schedule->getDate(),
-            4, $schedule->getHour(),
-            5, $id,
-        );
+        $service = $schedule->getService();
+        $barber = $schedule->getBarber();
+        $date = DateTime::createFromFormat("d/m/Y", $schedule->getDate())->format("Y/m/d");
+        $hour = DateTime::createFromFormat("H:i", $schedule->getHour())->format("H:i");
 
+        $stmt->bindValue(1, $service);
+        $stmt->bindValue(2, $barber);
+        $stmt->bindValue(3, $date);
+        $stmt->bindValue(4, $hour);
+        $stmt->bindValue(5, $id, PDO::PARAM_INT);
+        
         $stmt->execute();
-        $rs = $stmt->fetchObject("ScheduleResponseDto");
+        $rs = $stmt->fetch(PDO::FETCH_OBJ);
 
         [$this->conn, $stmt] = null;
 
+        var_dump($rs);
         return $rs;
     }
 
-    public function destroy(int $id): ScheduleResponseDto {
-        $stmt = $this->conn->prepare("DELETE FROM schedules WHERE id = ? RETURNING *");
+    public function destroy(int $id) {
+        $stmt = $this->conn->prepare("DELETE FROM schedules WHERE id = ?");
 
-        $stmt->bindParam(1, $id);
+        $stmt->bindValue(1, $id, PDO::PARAM_INT);
+        
         $stmt->execute();
-        $rs = $stmt->fetchObject("ScheduleResponseDto");
+        $rs = $stmt->fetch();
 
         [$this->conn, $stmt] = null;
 
