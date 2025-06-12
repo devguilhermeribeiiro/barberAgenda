@@ -34,7 +34,7 @@ class ScheduleService {
         return $this->scheduleRepository->save($schedule);
     }
     
-    public function update(ScheduleRequestDto $request): ScheduleResponseDto {
+    public function update(ScheduleRequestDto $request): stdClass {
         $schedule = new Schedule(
             $request->getService(),
             $request->getBarber(),
@@ -45,7 +45,7 @@ class ScheduleService {
         return $this->scheduleRepository->update($schedule, $request->getId());
     }
     
-    public function destroy($id): ScheduleResponseDto {
+    public function destroy($id) {
         return $this->scheduleRepository->destroy($id);
     }
 }
