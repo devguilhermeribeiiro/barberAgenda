@@ -19,12 +19,15 @@ class ScheduleController {
         echo $response;
     }
 
-    public function create(string $requestBody): void {
+    public function create(): void {
+        $requestBody = file_get_contents('php://input');
+
         if (!json_validate($requestBody)) {
             echo json_encode(["error" => "the request body must contains a valid JSON"]);
         }
 
         $data = json_decode($requestBody, true);
+        print_r($data);
 
         $scheduleRequestDto = new ScheduleRequestDto(
             $data["service"],
@@ -40,13 +43,14 @@ class ScheduleController {
     }
 
     public function show($id): void {
-        $data = $this->scheduleService->getById($id);
-        $response = json_encode($data);
+        $response = $this->scheduleService->getById($id);
 
-        echo $response;
+        echo json_encode($response);
     }
 
-    public function update(string $requestBody): void {
+    public function update($id): void {
+        $requestBody = file_get_contents('php://input');
+
         if (!json_validate($requestBody)) {
             echo json_encode(["error" => "the request body must contains a valid JSON"]);
         }
@@ -58,7 +62,7 @@ class ScheduleController {
             $data["barber"],
             $data["date"],
             $data["hour"],
-            $data["id"],
+            $id
         );
         
         $response = $this->scheduleService->update($scheduleRequestDto);
@@ -68,7 +72,7 @@ class ScheduleController {
 
     public function destroy($id): void {
         $data = $this->scheduleService->destroy($id);
-        $response = json_encode([["message" => "Schedule destroyed"] => $data]);
+        $response = json_encode(["message" => "Schedule destroyed"]);
 
         echo $response;
     }
