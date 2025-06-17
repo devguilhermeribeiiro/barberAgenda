@@ -71,7 +71,7 @@ class ScheduleController {
     }
 
     public function destroy($id): void {
-        $data = $this->scheduleService->destroy($id);
+        $this->scheduleService->destroy($id);
         $response = json_encode(["message" => "Schedule destroyed"]);
 
         echo $response;
