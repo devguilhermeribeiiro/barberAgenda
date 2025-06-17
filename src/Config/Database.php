@@ -10,7 +10,7 @@ class Database {
 
   public static function getConnection() {
     try {
-      self::$conn = new PDO('pgsql:host=localhost;dbname=barberagenda', "barberagenda", "barberagenda");
+      self::$conn = new PDO('pgsql:host=db;dbname=barberagenda', "barberagenda", "barberagenda");
       self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
        throw new DatabaseConnectionError($e->getMessage());
