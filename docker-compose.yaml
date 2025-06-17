@@ -1,6 +1,41 @@
-docker run --name barberagendadb \
--e POSTGRES_USER=barberagenda \
--e POSTGRES_PASSWORD=barberagenda \
--e POSTGRES_DB=barberagenda \
--p 5432:5432 \
--d postgres:16-latest
+version: '3.9'
+
+services:
+  php:
+    container_name: barberagenda_php
+    build: ./Server/Php
+    volumes:
+      - .:/var/www/barberagenda
+    networks:
+      - backend
+
+  nginx:
+    container_name: barberagenda_nginx
+    image: nginx:stable
+    volumes:
+      - ./Server/Nginx/server.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www/barberagenda
+    ports:
+      - "8080:80"
+    depends_on:
+      - php
+    networks:
+      - backend
+
+  db:
+    container_name: barberagenda_db
+    image: postgres:16
+    environment:
+      POSTGRES_DB: barberagenda
+      POSTGRES_USER: barberagenda
+      POSTGRES_PASSWORD: barberagenda
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+
+volumes:
+  pgdata:
+
+networks:
+  backend:
