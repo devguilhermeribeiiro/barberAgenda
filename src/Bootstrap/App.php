@@ -22,8 +22,8 @@ class App {
 
         Router::get('/schedules/{id}', 'ScheduleController@show');
 
-        Router::post('/schedules/{id}', 'ScheduleController@update');
+        Router::put('/schedules/{id}', 'ScheduleController@update');
 
-        Router::post('/schedules/{id}/destroy', 'ScheduleController@destroy');
+        Router::delete('/schedules/{id}', 'ScheduleController@destroy');
     }
 }
